@@ -1,0 +1,46 @@
+[project]
+name = "projectmoonshotdata-imda"
+version = "0.0.1"
+authors = [
+    { name="The Moonshot Team", email="our.moonshot.team@gmail.com" }
+]
+description = "A collection of data(e.g. llm connectors, benchmark tests) that can be used with the Moonshot toolkit."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: Apache Software License"
+]
+
+[tool.poetry]
+name = "moonshot-data"
+version = "0.0.1"
+description = "A collection of data(e.g. llm connectors, benchmark tests) that can be used with the Moonshot toolkit."
+authors = ["The Moonshot Team <our.moonshot.team@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+openai = "1.30.3"
+bert-score = "0.3.13"
+nltk = "3.8.1"
+py-readability-metrics = "1.4.5"
+rouge = "1.0.1"
+rouge-score = "0.1.2"
+aiometer = "0.5.0"
+aiohttp = "3.9.5"
+anthropic = "0.25.6"
+spacy = "3.7.4"
+sentence-transformers = "2.7.0"
+pylcs = "0.1.1"
+together = "1.2.0"
+scipy = "1.12.0"
+textattack = "0.3.10"
+tensorflow-hub = "0.16.1"
+homoglyphs = "2.0.4"
+tensorflow = "2.16.1"
+urllib3 = "2.2.1"
+xgboost = "2.0.3"

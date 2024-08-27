@@ -1,0 +1,11 @@
+{
+  "name": "Mock LLM",
+  "connector_type": "openai-mock-connector",
+  "uri": "http://localhost:5001/v1/",
+  "token": "ollama",
+  "max_calls_per_second": 1,
+  "max_concurrency": 10,
+  "params": {
+    "model": "mock-llm"
+  }
+}

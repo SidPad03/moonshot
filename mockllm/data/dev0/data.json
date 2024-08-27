@@ -1,0 +1,10 @@
+{
+  "prompts": {
+    "general:1:streaming=true:mimic=api Hello, how are you?": "Hi, I am doing good. How about you?",
+    "general:1:streaming=true:mimic=web Hello, how are you?": "Hi, I am doing good. How about you?",
+    "general:1:streaming=false Hello, how are you?": "Hi, I am doing good. How about you?",
+    "general:1:streaming=true:mimic=api What is AI?": "Artificial intelligence (AI) refers to systems or machines that mimic human intelligence to perform tasks and can iteratively improve themselves based on the information they collect.",
+    "general:1:streaming=true:mimic=web What is AI?": "Artificial intelligence (AI) refers to systems or machines that mimic human intelligence to perform tasks and can iteratively improve themselves based on the information they collect.",
+    "general:1:streaming=false What is AI?": "Artificial intelligence (AI) refers to systems or machines that mimic human intelligence to perform tasks and can iteratively improve themselves based on the information they collect."
+  }
+}

@@ -645,11 +645,12 @@ class TestCollectionApiBookmark:
     @pytest.mark.parametrize(
         "export_file_name, expected_output",
         [
-            ("bookmark", "tests/unit-tests/src/data/bookmarks/bookmark.json")
+            ("bookmark", "../moonshot-data/generated-outputs/bookmarks/bookmark.json")
         ]
     )
     def test_api_export_bookmarks(self, export_file_name, expected_output):
         # Call the API function
         actual_output = api_export_bookmarks(export_file_name)
+        print(actual_output)
         # Assert that the returned output matches the expected output
         assert actual_output == expected_output, "The returned output from api_export_bookmarks does not match the expected output."

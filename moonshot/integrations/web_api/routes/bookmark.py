@@ -1,9 +1,7 @@
-import os
 from typing import Optional
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import FileResponse
 
 from ..container import Container
 from ..schemas.bookmark_create_dto import BookmarkCreateDTO, BookmarkPydanticModel
@@ -138,7 +136,7 @@ def delete_bookmark(
             raise HTTPException(
                 status_code=500, detail=f"Failed to delete bookmark: {e.msg}"
             )
-@router.get(
+@router.post(
     "/api/v1/bookmarks/export", response_description="Exporting Bookmark to JSON file"
 )
 @inject
@@ -147,7 +145,7 @@ def export_bookbookmarks(
         "bookmarks", description="Name of the exported file"
     ),
     bookmark_service: BookmarkService = Depends(Provide[Container.bookmark_service]),
-) -> FileResponse:
+) -> str:
     """
     Export bookmarks to a JSON file with a given file name.
 
@@ -156,11 +154,10 @@ def export_bookbookmarks(
         bookmark_service: The service responsible for bookmark operations.
 
     Returns:
-        A FileResponse with the path to the exported file or an error message.
+        A string with the path to the exported file or an error message.
     """
     try:
-        file_path = bookmark_service.export_bookmarks(export_file_name)
-        return FileResponse(file_path, media_type="application/json", filename=export_file_name)
+        return bookmark_service.export_bookmarks(export_file_name)
     except ServiceException as e:
         if e.error_code == "FileNotFound":
             raise HTTPException(

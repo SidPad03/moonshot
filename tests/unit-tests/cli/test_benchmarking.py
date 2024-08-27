@@ -227,7 +227,6 @@ class TestBenchmarkingCLI:
             f"{ut_data_dir}/databases/my-runner.db",
             f"{ut_data_dir}/results/my-new-recipe-runner-result.json",
             f"{ut_data_dir}/results/sample-result.json",
-            f"{ut_data_dir}/cookbooks/tamil-language-cookbook.json",
         ]
 
         #files generated from unit tests
@@ -280,6 +279,7 @@ class TestBenchmarkingCLI:
                 "\"['bbq-lite-age-ambiguous']\" "
                 "-p \"['analogical-similarity','mmlu']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 err_missing_required_arg
             ),
@@ -291,6 +291,7 @@ class TestBenchmarkingCLI:
                 "\"['category1','category2']\" "
                 "-p \"['analogical-similarity','mmlu']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 err_missing_required_arg
             ),
@@ -304,6 +305,7 @@ class TestBenchmarkingCLI:
                 "\"['bertscore','bleuscore']\" " 
                 "-p \"['analogical-similarity','mmlu']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 f"[add_recipe]: Recipe ({test_recipe_id}) created."
             ),
@@ -317,6 +319,7 @@ class TestBenchmarkingCLI:
                 "\"['bertscore','bleuscore']\" " 
                 "-p \"['analogical-similarity','mmlu']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 "Dataset bbq-lite-age-ambiguousx does not exist."
             ),
@@ -331,6 +334,7 @@ class TestBenchmarkingCLI:
                 "\"['bertscore','bleuscorex']\" " 
                 "-p \"['analogical-similarity','mmlu']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 "Metric bleuscorex does not exist."
             ),
@@ -345,8 +349,23 @@ class TestBenchmarkingCLI:
                 "\"['bertscore','bleuscore']\" " 
                 "-p \"['analogical-similarity','mmlux']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 "Prompt Template mmlux does not exist."
+            ),
+
+            # Failure: Add with non-existent attack module
+            (
+                ["add_recipe 'My unit test recipe' "
+                "'hello world description?!' "
+                "\"['category1','category2']\" "
+                "\"['bbq-lite-age-ambiguous', 'bbq-lite-age-ambiguous']\" "
+                "\"['bertscore','bleuscore']\" " 
+                "-p \"['analogical-similarity','mmlu']\" "
+                "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attackx']\" "
+                "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
+                "Attack Module charswap_attackx does not exist."
             ),
 
             # Failure: Add with incorrect parameter type for lists
@@ -357,11 +376,11 @@ class TestBenchmarkingCLI:
                 "\"['bbq-lite-age-ambiguous']\" "
                 "\"['bertscore','bleuscore']\" " 
                 "-p \"['analogical-similarity','mmlu']\" "
-                "-t \"'tag1'\" "
+                "-t \"['tag1','tag2']\" "
+                "-a \"'charswap_attack'\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "],
                 "[add_recipe]: 1 validation error for api_create_recipe"              
             ),
-
             # Failure: Add with unknown flag           
             (
                 ["add_recipe 'My unit test recipe' "
@@ -371,6 +390,7 @@ class TestBenchmarkingCLI:
                 "\"['bertscore','bleuscore']\" " 
                 "-p \"['analogical-similarity','mmlu']\" "
                 "-t \"['tag1','tag2']\" "
+                "-a \"['charswap_attack']\" "
                 "-g \"{'A':[80,100],'B':[60,79],'C':[40,59],'D':[20,39],'E':[0,19]}\" "
                 "-x o"],
                 err_unrecognised_arg
@@ -502,7 +522,7 @@ class TestBenchmarkingCLI:
             # Success: Optional args with no results found
             (
                 ["list_recipes -f \"RandomArg\""],
-                "There are no recipes found."
+                "No recipes containing keyword found."
             ),
 
             # Failure: List with unknown flag
@@ -519,7 +539,7 @@ class TestBenchmarkingCLI:
         "function_args, expected_output",
         [
             # Success: no results
-            ("wrong_recipes", "There are no recipes found."),
+            ("wrong_recipes", "No recipes containing keyword found."),
 
             # Success: results returned
             ("bbq", "bbq"),
@@ -529,7 +549,6 @@ class TestBenchmarkingCLI:
         # additional function to test listing as the list command is hard to assert in CLI
         parser = argparse.ArgumentParser()
         parser.add_argument("-f", "--find", type=str, nargs="?")
-        parser.add_argument("-p", "--pagination", type=str, nargs="?")
         args = parser.parse_args(['--find', function_args])
 
         returned_results = list_recipes(args)
@@ -555,7 +574,7 @@ class TestBenchmarkingCLI:
             # Success: Optional args with no results found
             (
                 ["list_cookbooks -f \"RandomArg\""],
-                "There are no cookbooks found."
+                "No cookbooks containing keyword found."
             ),
 
             # Failure: List with unknown flag
@@ -572,7 +591,7 @@ class TestBenchmarkingCLI:
         "function_args, expected_output",
         [
             # Success: no results
-            ("no-such-cookbook", "There are no cookbooks found."),
+            ("no-such-cookbook", "No cookbooks containing keyword found."),
 
             # Success: results returned
             ("chinese", "chinese-safety-cookbook"),
@@ -582,7 +601,6 @@ class TestBenchmarkingCLI:
         # additional function to test listing as the list command is hard to assert in CLI
         parser = argparse.ArgumentParser()
         parser.add_argument("-f", "--find", type=str, nargs="?")
-        parser.add_argument("-p", "--pagination", type=str, nargs="?")
         args = parser.parse_args(['--find', function_args])
 
         returned_results = list_cookbooks(args)
@@ -608,7 +626,7 @@ class TestBenchmarkingCLI:
             # Success: Optional args with no results found
             (
                 ["list_datasets -f \"RandomArg\""],
-                "There are no datasets found."
+                "No datasets containing keyword found."
             ),
 
             # Failure: List with unknown flag
@@ -625,7 +643,7 @@ class TestBenchmarkingCLI:
         "function_args, expected_output",
         [
             # Success: no results
-            ("no-such-dataset", "There are no datasets found."),
+            ("no-such-dataset", "No datasets containing keyword found."),
 
             # Success: results returned
             ("arc", "arc-easy"),
@@ -635,7 +653,6 @@ class TestBenchmarkingCLI:
         # additional function to test listing as the list command is hard to assert in CLI
         parser = argparse.ArgumentParser()
         parser.add_argument("-f", "--find", type=str, nargs="?")
-        parser.add_argument("-p", "--pagination", type=str, nargs="?")
         args = parser.parse_args(['--find', function_args])
 
         returned_results = list_datasets(args)
@@ -662,7 +679,7 @@ class TestBenchmarkingCLI:
             # Success: Optional args with no results found
             (
                 ["list_metrics -f \"RandomArg\""],
-                "There are no metrics found."
+                "No metrics containing keyword found."
             ),
 
             # Failure: List with unknown flag
@@ -679,7 +696,7 @@ class TestBenchmarkingCLI:
         "function_args, expected_output",
         [
             # Success: no results
-            ("no-such-metrics", "There are no metrics found."),
+            ("no-such-metrics", "No metrics containing keyword found."),
 
             # Success: results returned
             ("bert", "bertscore"),
@@ -689,7 +706,6 @@ class TestBenchmarkingCLI:
         # additional function to test listing as the list command is hard to assert in CLI
         parser = argparse.ArgumentParser()
         parser.add_argument("-f", "--find", type=str, nargs="?")
-        parser.add_argument("-p", "--pagination", type=str, nargs="?")
         args = parser.parse_args(['--find', function_args])
 
         returned_results = list_metrics(args)
@@ -806,6 +822,23 @@ class TestBenchmarkingCLI:
              " ('grading_scale', {'New A':[75,100],'New B':[50,74],'New C':[25,49],'New D':[0,24]}) "
              "]\""],
              "Prompt Template nope does not exist."
+            ),       
+
+            # Failure: Update with non-existent attack module
+            (["add_recipe 'My unit test recipe' "
+                "'hello world description?!' "
+                "\"['category1','category2']\" "
+                "\"['bbq-lite-age-ambiguous']\" "
+                "\"['bertscore','bleuscore']\" " 
+                "-p \"['analogical-similarity','mmlu']\" "
+                "-t \"['tag1','tag2']\" ",
+            f"update_recipe {test_recipe_id} \"[('name', 'My Updated Recipe2'), ('tags', ['updated tag']), "
+             "('description', 'updated description'), ('categories', ['updated cat 1', 'updated cat 2']), "
+             " ('datasets', ['bbq-lite-age-ambiguous']), ('prompt_templates', ['analogical-similarity', 'mmlu']), "
+             " ('metrics', ['bleuscore']), ('attack_modules', ['nope']), "
+             " ('grading_scale', {'New A':[75,100],'New B':[50,74],'New C':[25,49],'New D':[0,24]}) "
+             "]\""],
+             "Attack Module nope does not exist."
             ),       
 
             # Failure: Update with unknown flag
@@ -970,7 +1003,7 @@ class TestBenchmarkingCLI:
             # Success: Optional args with no results found
             (
                 ["list_results -f \"RandomArg\""],
-                "There are no results found."
+                "No results containing keyword found."
             ),
 
             # Failure: List with unknown flag
@@ -987,7 +1020,7 @@ class TestBenchmarkingCLI:
         "function_args, expected_output",
         [
             # Success: no results
-            ("no-such-result", "There are no results found."),
+            ("no-such-result", "No results containing keyword found."),
 
             # # Success: results returned 
             # ("my-new-recipe-runner", "my-new-recipe-runner-result"),
@@ -997,7 +1030,6 @@ class TestBenchmarkingCLI:
         # additional function to test listing as the list command is hard to assert in CLI
         parser = argparse.ArgumentParser()
         parser.add_argument("-f", "--find", type=str, nargs="?")
-        parser.add_argument("-p", "--pagination", type=str, nargs="?")
         args = parser.parse_args(['--find', function_args])
 
         returned_results = list_results(args)
@@ -1023,7 +1055,7 @@ class TestBenchmarkingCLI:
             # Success: Optional args with no results found
             (
                 ["list_runs -f \"RandomArg\""],
-                "There are no runs found."
+                "No runs containing keyword found."
             ),
 
             # Failure: List with unknown flag
@@ -1040,7 +1072,7 @@ class TestBenchmarkingCLI:
         "function_args, expected_output",
         [
             # Success: no results
-            ("no-such-run", "There are no runs found."),
+            ("no-such-run", "No runs containing keyword found."),
 
             # # Success: results returned
             # ("my-new-recipe-runner", "my-new-recipe-runner"),
@@ -1050,7 +1082,6 @@ class TestBenchmarkingCLI:
         # additional function to test listing as the list command is hard to assert in CLI
         parser = argparse.ArgumentParser()
         parser.add_argument("-f", "--find", type=str, nargs="?")
-        parser.add_argument("-p", "--pagination", type=str, nargs="?")
         args = parser.parse_args(['--find', function_args])
 
         returned_results = list_runs(args)

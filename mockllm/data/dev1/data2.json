@@ -1,0 +1,6 @@
+{
+  "prompts": {
+    "Why is the sky blue?": "The sky is blue due to Rayleigh scattering, which disperses shorter blue wavelengths of sunlight more than longer red wavelengths.",
+    "Can you tell me how photosynthesis works?": "Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy, usually from the sun, into chemical energy stored in glucose made from carbon dioxide and water."
+  }
+}
